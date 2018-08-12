@@ -147,7 +147,7 @@ public class FileInterpreter {
     }
 
     private void initializeStream() {
-        InputStream inputStream = null;
+        InputStream inputStream;
         try {
             inputStream = new FileInputStream(file);
         } catch (FileNotFoundException exception) {
