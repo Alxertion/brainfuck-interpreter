@@ -19,6 +19,7 @@ public class FileInterpreter {
     private int instructionPointer;
     private int inputPointer;
     private final BiMap<Integer, Integer> loopMap;
+    private long instructionCount;
 
     public FileInterpreter(File file, Memory memory) {
         this(file, memory, "");
@@ -32,6 +33,42 @@ public class FileInterpreter {
         loopMap = HashBiMap.create();
         readProgram();
         mapLoops();
+    }
+
+    public void run() {
+        // reinitialize the program, if necessary
+        if (memory.isDirty()) {
+            memory.reinitialize();
+        }
+        instructionPointer = 0;
+        instructionCount = 0;
+
+        // start the time measurement
+        long startTime = System.currentTimeMillis();
+
+        // execute the code
+        while (instructionPointer < programCode.length()) {
+            executeCurrentInstruction();
+            instructionPointer++;
+            instructionCount++;
+        }
+
+        // end the time measurement
+        long stopTime = System.currentTimeMillis();
+        elapsedTimeMilliseconds = stopTime - startTime;
+        elapsedTimeSeconds = elapsedTimeMilliseconds / 1000.0d;
+    }
+
+    public long getTimeInMilliseconds() {
+        return elapsedTimeMilliseconds;
+    }
+
+    public double getTimeInSeconds() {
+        return elapsedTimeSeconds;
+    }
+
+    public long getInstructionCount() {
+        return instructionCount;
     }
 
     private void readProgram() {
@@ -71,28 +108,6 @@ public class FileInterpreter {
         if (!beginningBracketStack.isEmpty()) {
             throw new InterpreterError("Brackets are not matched properly (too many '[')!");
         }
-    }
-
-    public void run() {
-        // reinitialize the program, if necessary
-        if (memory.isDirty()) {
-            memory.reinitialize();
-        }
-        instructionPointer = 0;
-
-        // start the time measurement
-        long startTime = System.currentTimeMillis();
-
-        // execute the code
-        while (instructionPointer < programCode.length()) {
-            executeCurrentInstruction();
-            instructionPointer++;
-        }
-
-        // end the time measurement
-        long stopTime = System.currentTimeMillis();
-        elapsedTimeMilliseconds = stopTime - startTime;
-        elapsedTimeSeconds = elapsedTimeMilliseconds / 1000.0d;
     }
 
     private void executeCurrentInstruction() {
@@ -147,13 +162,5 @@ public class FileInterpreter {
         } catch (IOException exception) {
             throw new InterpreterError("File " + file.getName() + " could not be closed!");
         }
-    }
-
-    public long getTimeInMilliseconds() {
-        return elapsedTimeMilliseconds;
-    }
-
-    public double getTimeInSeconds() {
-        return elapsedTimeSeconds;
     }
 }
