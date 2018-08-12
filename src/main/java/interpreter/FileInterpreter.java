@@ -105,7 +105,7 @@ public class FileInterpreter {
                 memory.decrementAtPointer();
                 break;
             case '.':
-                System.out.println(memory.getCharAtPointer());
+                System.out.print(memory.getCharAtPointer());
                 break;
             case ',':
                 memory.setCharAtPointer(scanner.nextLine().charAt(0));

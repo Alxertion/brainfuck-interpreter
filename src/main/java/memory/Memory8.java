@@ -70,7 +70,7 @@ public class Memory8 implements Memory {
     }
 
     public char getCharAtPointer() {
-        return (char) (memoryCells[pointerIndex] * 0xFF);
+        return (char) (memoryCells[pointerIndex] & 0xFF);
     }
 
     @Override
