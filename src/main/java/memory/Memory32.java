@@ -1,20 +1,20 @@
 package memory;
 
-public class Memory8 implements Memory {
+public class Memory32 implements Memory {
     private int initialSize;
-    private byte[] memoryCells;
+    private int[] memoryCells;
     private OverflowBehaviour overflowBehaviour;
     private boolean dynamicMemory;
     private int pointerIndex;
     private boolean dirty;
 
-    public Memory8() {
+    public Memory32() {
         this(DEFAULT_MEMORY_SIZE, OverflowBehaviour.WRAP, true);
     }
 
-    public Memory8(int size, OverflowBehaviour overflowBehaviour, boolean dynamicMemory) {
+    public Memory32(int size, OverflowBehaviour overflowBehaviour, boolean dynamicMemory) {
         this.initialSize = size;
-        this.memoryCells = new byte[size];
+        this.memoryCells = new int[size];
         this.overflowBehaviour = overflowBehaviour;
         this.dynamicMemory = dynamicMemory;
         this.pointerIndex = 0;
@@ -22,13 +22,13 @@ public class Memory8 implements Memory {
     }
 
     public void reinitialize() {
-        this.memoryCells = new byte[initialSize];
+        this.memoryCells = new int[initialSize];
         this.pointerIndex = 0;
         this.dirty = false;
     }
 
     public int getCellValue(int index) {
-        return memoryCells[index] & 0xFF;
+        return memoryCells[index];
     }
 
     public int getPointerIndex() {
@@ -70,7 +70,7 @@ public class Memory8 implements Memory {
     }
 
     public char getCharAtPointer() {
-        return (char) (memoryCells[pointerIndex] & 0xFF);
+        return (char) memoryCells[pointerIndex];
     }
 
     public int getValueAtPointer() {
@@ -79,7 +79,7 @@ public class Memory8 implements Memory {
 
     public void setCharAtPointer(char character) {
         dirty = true;
-        memoryCells[pointerIndex] = (byte) character;
+        memoryCells[pointerIndex] = (short) character;
     }
 
     public boolean isDirty() {
@@ -88,7 +88,7 @@ public class Memory8 implements Memory {
 
     private void resizeMemory() {
         dirty = true;
-        byte[] newMemory = new byte[memoryCells.length * 2];
+        int[] newMemory = new int[memoryCells.length * 2];
         System.arraycopy(memoryCells, 0, newMemory, 0, memoryCells.length);
         memoryCells = newMemory;
     }

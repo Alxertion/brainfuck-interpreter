@@ -2,6 +2,7 @@ package memory;
 
 public interface Memory {
     int DEFAULT_MEMORY_SIZE = 30000;
+
     void reinitialize();
     int getCellValue(int index);
     int getPointerIndex();
