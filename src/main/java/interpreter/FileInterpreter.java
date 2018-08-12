@@ -80,6 +80,7 @@ public class FileInterpreter {
             String line;
             StringBuilder stringBuilder = new StringBuilder();
             while ((line = bufferedReader.readLine()) != null) {
+                line = removeComments(line);
                 stringBuilder.append(line);
             }
             programCode = stringBuilder.toString();
@@ -89,6 +90,10 @@ public class FileInterpreter {
 
         // close the file
         closeStream();
+    }
+
+    private String removeComments(String line) {
+        return line.replaceAll("[^<>+\\-.,\\[\\]]","");
     }
 
     private void mapLoops() {
