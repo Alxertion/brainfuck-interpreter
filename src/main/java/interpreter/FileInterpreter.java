@@ -7,7 +7,6 @@ import memory.Memory;
 import java.io.*;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Scanner;
 
 public class FileInterpreter {
     private final File file;
@@ -15,15 +14,21 @@ public class FileInterpreter {
     private long elapsedTimeMilliseconds;
     private double elapsedTimeSeconds;
     private final Memory memory;
-    private final Scanner scanner;
+    private final String input;
     private String programCode;
     private int instructionPointer;
+    private int inputPointer;
     private final BiMap<Integer, Integer> loopMap;
 
     public FileInterpreter(File file, Memory memory) {
+        this(file, memory, "");
+    }
+
+    public FileInterpreter(File file, Memory memory, String input) {
         this.file = file;
         this.memory = memory;
-        this.scanner = new Scanner(System.in);
+        this.input = input;
+        this.inputPointer = 0;
         loopMap = HashBiMap.create();
         readProgram();
         mapLoops();
@@ -108,7 +113,10 @@ public class FileInterpreter {
                 System.out.print(memory.getCharAtPointer());
                 break;
             case ',':
-                memory.setCharAtPointer(scanner.nextLine().charAt(0));
+                if (inputPointer < input.length()) {
+                    memory.setCharAtPointer(input.charAt(inputPointer));
+                    inputPointer++;
+                }
                 break;
             case '[':
                 if (memory.getValueAtPointer() == 0) {

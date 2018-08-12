@@ -10,10 +10,11 @@ public class Main {
     public static void main(String[] args) {
         Memory memory = new Memory8();
         ClassLoader classLoader = Main.class.getClassLoader();
-        File file = new File(classLoader.getResource("testprograms/pi.bf").getFile());
-        FileInterpreter fileInterpreter = new FileInterpreter(file, memory);
+        File file = new File(classLoader.getResource("testprograms/sierpinski.bf").getFile());
+        FileInterpreter fileInterpreter = new FileInterpreter(file, memory, "");
         fileInterpreter.run();
-        System.out.println(fileInterpreter.getTimeInMilliseconds() + "ms");
-        System.out.println(fileInterpreter.getTimeInSeconds() + "s");
+        System.out.println();
+        System.out.println("Finished in " + fileInterpreter.getTimeInMilliseconds() + "ms");
+        System.out.println("Finished in " + fileInterpreter.getTimeInSeconds() + "s");
     }
 }
