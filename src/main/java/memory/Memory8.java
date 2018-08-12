@@ -1,9 +1,10 @@
 package memory;
 
 public class Memory8 implements Memory {
+    private int initialSize;
     private byte[] memoryCells;
-    private OverflowBehaviour overflowBehaviour;
-    private boolean dynamicMemory;
+    private final OverflowBehaviour overflowBehaviour;
+    private final boolean dynamicMemory;
     private int pointerIndex;
 
     public Memory8() {
@@ -11,9 +12,15 @@ public class Memory8 implements Memory {
     }
 
     public Memory8(int size, OverflowBehaviour overflowBehaviour, boolean dynamicMemory) {
+        this.initialSize = size;
         this.memoryCells = new byte[size];
         this.overflowBehaviour = overflowBehaviour;
         this.dynamicMemory = dynamicMemory;
+        this.pointerIndex = 0;
+    }
+
+    public void reinitialize() {
+        this.memoryCells = new byte[initialSize];
         this.pointerIndex = 0;
     }
 
@@ -47,12 +54,6 @@ public class Memory8 implements Memory {
         }
     }
 
-    private void resizeMemory() {
-        byte[] newMemory = new byte[memoryCells.length * 2];
-        System.arraycopy(memoryCells, 0, newMemory, 0, memoryCells.length);
-        memoryCells = newMemory;
-    }
-
     public void incrementAtPointer() {
         memoryCells[pointerIndex]++;
     }
@@ -67,5 +68,11 @@ public class Memory8 implements Memory {
 
     public void setCharAtPointer(char character) {
         memoryCells[pointerIndex] = (byte) character;
+    }
+
+    private void resizeMemory() {
+        byte[] newMemory = new byte[memoryCells.length * 2];
+        System.arraycopy(memoryCells, 0, newMemory, 0, memoryCells.length);
+        memoryCells = newMemory;
     }
 }
