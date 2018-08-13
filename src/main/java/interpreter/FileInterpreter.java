@@ -5,8 +5,12 @@ import com.google.common.collect.HashBiMap;
 import memory.Memory;
 
 import java.io.*;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Locale;
 
 public class FileInterpreter {
     private final File file;
@@ -37,11 +41,7 @@ public class FileInterpreter {
 
     public void run() {
         // reinitialize the program, if necessary
-        if (memory.isDirty()) {
-            memory.reinitialize();
-        }
-        instructionPointer = 0;
-        instructionCount = 0;
+        reinitialize();
 
         // start the time measurement
         long startTime = System.currentTimeMillis();
@@ -69,6 +69,23 @@ public class FileInterpreter {
 
     public long getInstructionCount() {
         return instructionCount;
+    }
+
+    public String getFormattedInstructionCount() {
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+        DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
+        symbols.setGroupingSeparator('.');
+        formatter.setDecimalFormatSymbols(symbols);
+
+        return formatter.format(instructionCount);
+    }
+
+    private void reinitialize() {
+        if (memory.isDirty()) {
+            memory.reinitialize();
+        }
+        instructionPointer = 0;
+        instructionCount = 0;
     }
 
     private void readProgram() {
