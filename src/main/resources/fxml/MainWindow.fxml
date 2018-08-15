@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.geometry.Insets?>
 
+<?import javafx.scene.text.Font?>
 <GridPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.121"
           xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
     <MenuBar layoutY="-2.0" prefHeight="32.0" prefWidth="1024.0" GridPane.hgrow="ALWAYS"
@@ -39,6 +40,9 @@
         <GridPane.margin>
             <Insets bottom="15.0"/>
         </GridPane.margin>
+        <font>
+            <Font name="Courier New Bold" size="18.0" />
+        </font>
     </TextArea>
     <TextArea fx:id="outputTextArea" editable="false" layoutY="593.0" prefHeight="101.0" prefWidth="1024.0"
               promptText="Output..." GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.vgrow="ALWAYS"
@@ -46,7 +50,14 @@
         <GridPane.margin>
             <Insets bottom="15.0"/>
         </GridPane.margin>
+        <font>
+            <Font name="Courier New Bold" size="18.0" />
+        </font>
     </TextArea>
     <TextArea fx:id="inputTextArea" layoutY="706.0" prefHeight="48.0" prefWidth="1024.0" promptText="Input..."
-              GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS"/>
+              GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
+        <font>
+            <Font name="Courier New Bold" size="18.0" />
+        </font>
+    </TextArea>
 </GridPane>
