@@ -5,44 +5,48 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
-   <children>
-      <MenuBar layoutY="-2.0" prefHeight="32.0" prefWidth="1024.0">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
-            <items>
-              <MenuItem fx:id="newMenuItem" mnemonicParsing="false" text="New" />
-                  <MenuItem fx:id="openMenuItem" mnemonicParsing="false" text="Open..." />
-                  <MenuItem fx:id="openExampleMenuItem" mnemonicParsing="false" text="Open Example" />
-                  <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" text="Exit" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" text="Undo" />
-                  <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" text="Redo" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="cutMenuItem" mnemonicParsing="false" text="Cut" />
-                  <MenuItem fx:id="copyMenuItem" mnemonicParsing="false" text="Copy" />
-                  <MenuItem fx:id="pasteMenuItem" mnemonicParsing="false" text="Paste" />
-            </items>
-          </Menu>
-            <Menu mnemonicParsing="false" text="Run">
-               <items>
-                  <MenuItem fx:id="runMenuItem" mnemonicParsing="false" text="Run" />
-               </items>
-            </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" text="About" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
-      <TextArea fx:id="codeTextArea" layoutY="30.0" prefHeight="550.0" prefWidth="1024.0" promptText="Code..." />
-      <TextArea fx:id="outputTextArea" editable="false" layoutY="593.0" prefHeight="101.0" prefWidth="1024.0" promptText="Output..." />
-      <TextArea fx:id="inputTextArea" layoutY="706.0" prefHeight="48.0" prefWidth="1024.0" promptText="Input..." />
-   </children>
-</AnchorPane>
+<GridPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.121"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
+    <MenuBar layoutY="-2.0" prefHeight="32.0" prefWidth="1024.0" GridPane.hgrow="ALWAYS"
+             GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <Menu mnemonicParsing="false" text="File">
+            <MenuItem onAction="#newMenuItemHandler" fx:id="newMenuItem" mnemonicParsing="false" text="New"/>
+            <MenuItem onAction="#openMenuItemHandler" fx:id="openMenuItem" mnemonicParsing="false" text="Open..."/>
+            <MenuItem onAction="#openExampleMenuItemHandler" fx:id="openExampleMenuItem" mnemonicParsing="false"
+                      text="Open Example"/>
+            <MenuItem onAction="#exitMenuItemHandler" fx:id="exitMenuItem" mnemonicParsing="false" text="Exit"/>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+            <MenuItem onAction="#undoMenuItemHandler" fx:id="undoMenuItem" mnemonicParsing="false" text="Undo"/>
+            <MenuItem onAction="#redoMenuItemHandler" fx:id="redoMenuItem" mnemonicParsing="false" text="Redo"/>
+            <SeparatorMenuItem mnemonicParsing="false"/>
+            <MenuItem onAction="#cutMenuItemHandler" fx:id="cutMenuItem" mnemonicParsing="false" text="Cut"/>
+            <MenuItem onAction="#copyMenuItemHandler" fx:id="copyMenuItem" mnemonicParsing="false" text="Copy"/>
+            <MenuItem onAction="#pasteMenuItemHandler" fx:id="pasteMenuItem" mnemonicParsing="false" text="Paste"/>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Run">
+            <MenuItem onAction="#runMenuItemHandler" fx:id="runMenuItem" mnemonicParsing="false" text="Run"/>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+            <MenuItem onAction="#aboutMenuItemHandler" fx:id="aboutMenuItem" mnemonicParsing="false" text="About"/>
+        </Menu>
+    </MenuBar>
+    <TextArea fx:id="codeTextArea" layoutY="30.0" prefHeight="550.0" prefWidth="1024.0" promptText="Code..."
+              GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
+        <GridPane.margin>
+            <Insets bottom="15.0"/>
+        </GridPane.margin>
+    </TextArea>
+    <TextArea fx:id="outputTextArea" editable="false" layoutY="593.0" prefHeight="101.0" prefWidth="1024.0"
+              promptText="Output..." GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.vgrow="ALWAYS"
+              GridPane.hgrow="ALWAYS">
+        <GridPane.margin>
+            <Insets bottom="15.0"/>
+        </GridPane.margin>
+    </TextArea>
+    <TextArea fx:id="inputTextArea" layoutY="706.0" prefHeight="48.0" prefWidth="1024.0" promptText="Input..."
+              GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS"/>
+</GridPane>
