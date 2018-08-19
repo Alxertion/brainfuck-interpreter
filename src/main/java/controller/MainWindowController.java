@@ -378,9 +378,11 @@ public class MainWindowController {
                 }
             }
             Platform.runLater(() -> {
-                outputTextArea.appendText("\n");
-                outputTextArea.appendText("Finished in " + fileInterpreter.getTimeInMilliseconds() + "ms (" + fileInterpreter.getTimeInSeconds() + "s)" + "\n");
-                outputTextArea.appendText("Number of executed instructions: " + fileInterpreter.getFormattedInstructionCount());
+                if (!fileInterpreter.isRunning() && characterQueue.isEmpty()) {
+                    outputTextArea.appendText("\n");
+                    outputTextArea.appendText("Finished in " + fileInterpreter.getTimeInMilliseconds() + "ms (" + fileInterpreter.getTimeInSeconds() + "s)" + "\n");
+                    outputTextArea.appendText("Number of executed instructions: " + fileInterpreter.getFormattedInstructionCount());
+                }
             });
         });
     }

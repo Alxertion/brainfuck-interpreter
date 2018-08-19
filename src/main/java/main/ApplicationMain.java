@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class ApplicationMain extends Application {
-    public static String INTERPRETER_VERSION = "v1.0.0";
+    public static String INTERPRETER_VERSION = "v0.1.0";
     public static String INTERPRETER_TITLE = "Brainfuck Interpreter " + INTERPRETER_VERSION;
     public static String REPOSITORY_LINK = "https://github.com/Alxertion/brainfuck-interpreter/";
 
