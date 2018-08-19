@@ -2,11 +2,13 @@ package controller;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import interpreter.FileInterpreter;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
@@ -14,20 +16,25 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import main.ApplicationMain;
+import memory.Memory;
+import memory.Memory8;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Optional;
+import java.util.concurrent.*;
 
 public class MainWindowController {
     private File currentFile = null;
     private boolean dirtyFile = false;
     private Stage primaryStage;
+    private ExecutorService executorService = Executors.newCachedThreadPool();
 
     @FXML
     private TextArea codeTextArea;
@@ -37,6 +44,8 @@ public class MainWindowController {
     private TextArea inputTextArea;
     @FXML
     private String previousContent;
+    @FXML
+    private MenuItem runMenuItem;
 
     @FXML
     private void initialize() {
@@ -166,7 +175,7 @@ public class MainWindowController {
 
     @FXML
     private void runMenuItemHandler() {
-        if (dirtyFile) {
+        if (dirtyFile || currentFile == null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Warning");
             alert.setContentText("Current file must be saved to continue. Save?");
@@ -174,11 +183,17 @@ public class MainWindowController {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
                     saveCurrentFile();
+                    if (currentFile == null) {
+                        return;
+                    }
                     runCurrentFile();
                 } catch (IOException exception) {
                     showFileWriteAlert();
                 }
             }
+        }
+        else {
+            runCurrentFile();
         }
     }
 
@@ -327,7 +342,9 @@ public class MainWindowController {
                     }
                 }
                 Platform.setImplicitExit(true);
+                System.exit(0);
             } catch (IOException exception) {
+                event.consume();
                 showFileWriteAlert();
             }
         });
@@ -339,6 +356,32 @@ public class MainWindowController {
     }
 
     private void runCurrentFile() {
-        //TODO
+        runMenuItem.setDisable(true);
+        inputTextArea.setEditable(false);
+        Memory memory = new Memory8();
+        FileInterpreter fileInterpreter = new FileInterpreter(currentFile, memory, inputTextArea.getText());
+        BlockingQueue<Character> characterQueue = new LinkedBlockingQueue<>();
+        OutputStream outputStream = new OutputQueue(characterQueue);
+        executorService.submit(() -> {
+            fileInterpreter.run(outputStream);
+            inputTextArea.setEditable(true);
+            runMenuItem.setDisable(false);
+        });
+        executorService.submit(() -> {
+            Platform.runLater(() -> outputTextArea.setText(""));
+            outputTextArea.setText("");
+            while (fileInterpreter.isRunning() || !characterQueue.isEmpty()) {
+                try {
+                    char character = characterQueue.take();
+                    Platform.runLater(() -> outputTextArea.appendText(String.valueOf(character)));
+                } catch (InterruptedException ignored) {
+                }
+            }
+            Platform.runLater(() -> {
+                outputTextArea.appendText("\n");
+                outputTextArea.appendText("Finished in " + fileInterpreter.getTimeInMilliseconds() + "ms (" + fileInterpreter.getTimeInSeconds() + "s)" + "\n");
+                outputTextArea.appendText("Number of executed instructions: " + fileInterpreter.getFormattedInstructionCount());
+            });
+        });
     }
 }

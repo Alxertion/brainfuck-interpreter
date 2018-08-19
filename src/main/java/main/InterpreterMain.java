@@ -13,7 +13,7 @@ public class InterpreterMain {
 
         Memory memory = new Memory8();
         FileInterpreter fileInterpreter = new FileInterpreter(file, memory, "");
-        fileInterpreter.run();
+        fileInterpreter.run(System.out);
 
         System.out.println();
         System.out.println("Finished in " + fileInterpreter.getTimeInMilliseconds() + "ms (" + fileInterpreter.getTimeInSeconds() + "s)");

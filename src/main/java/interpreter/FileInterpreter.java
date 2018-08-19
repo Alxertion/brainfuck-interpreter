@@ -24,6 +24,8 @@ public class FileInterpreter {
     private int inputPointer;
     private final BiMap<Integer, Integer> loopMap;
     private long instructionCount;
+    private OutputStream outputStream;
+    private volatile boolean running = false;
 
     public FileInterpreter(File file, Memory memory) {
         this(file, memory, "");
@@ -39,9 +41,13 @@ public class FileInterpreter {
         mapLoops();
     }
 
-    public void run() {
+    public void run(OutputStream outputStream) {
+        // starting the interpreter
+        running = true;
+
         // reinitialize the program, if necessary
         reinitialize();
+        this.outputStream = outputStream;
 
         // start the time measurement
         long startTime = System.currentTimeMillis();
@@ -57,6 +63,7 @@ public class FileInterpreter {
         long stopTime = System.currentTimeMillis();
         elapsedTimeMilliseconds = stopTime - startTime;
         elapsedTimeSeconds = elapsedTimeMilliseconds / 1000.0d;
+        running = false;
     }
 
     public long getTimeInMilliseconds() {
@@ -147,7 +154,12 @@ public class FileInterpreter {
                 memory.decrementAtPointer();
                 break;
             case '.':
-                System.out.print(memory.getCharAtPointer());
+                try {
+                    outputStream.write(memory.getCharAtPointer());
+                }
+                catch (IOException exception) {
+                    throw new InterpreterError("Can not write to output stream!");
+                }
                 break;
             case ',':
                 if (inputPointer < input.length()) {
@@ -184,5 +196,9 @@ public class FileInterpreter {
         } catch (IOException exception) {
             throw new InterpreterError("File " + file.getName() + " could not be closed!");
         }
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 }
