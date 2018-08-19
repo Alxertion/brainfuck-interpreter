@@ -10,7 +10,9 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class ApplicationMain extends Application {
-    public static String BRAINFUCK_TITLE = "Brainfuck Interpreter v1.0.0";
+    public static String INTERPRETER_VERSION = "v1.0.0";
+    public static String INTERPRETER_TITLE = "Brainfuck Interpreter " + INTERPRETER_VERSION;
+    public static String REPOSITORY_LINK = "https://github.com/Alxertion/brainfuck-interpreter/";
 
     public static void main(String[] args) {
         launch(args);
@@ -26,7 +28,7 @@ public class ApplicationMain extends Application {
         MainWindowController controller = fxmlLoader.getController();
         controller.setPrimaryStage(primaryStage);
 
-        primaryStage.setTitle(BRAINFUCK_TITLE);
+        primaryStage.setTitle(INTERPRETER_TITLE);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

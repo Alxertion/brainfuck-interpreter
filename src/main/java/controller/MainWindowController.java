@@ -2,18 +2,26 @@ package controller;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import main.ApplicationMain;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Optional;
 
 public class MainWindowController {
@@ -45,7 +53,7 @@ public class MainWindowController {
     }
 
     @FXML
-    private void newMenuItemHandler(ActionEvent actionEvent) {
+    private void newMenuItemHandler() {
         try {
             if (!dirtyFile || saveAndExitDialog()) {
                 currentFile = null;
@@ -54,14 +62,13 @@ public class MainWindowController {
                 outputTextArea.setText("");
                 setDirtyFile(false);
             }
-        }
-        catch (IOException exception) {
+        } catch (IOException exception) {
             showFileWriteAlert();
         }
     }
 
     @FXML
-    private void openMenuItemHandler(ActionEvent actionEvent) {
+    private void openMenuItemHandler() {
         FileChooser fileChooser = createFileChooser();
         fileChooser.setTitle("Open File");
         File file = fileChooser.showOpenDialog(primaryStage);
@@ -75,12 +82,12 @@ public class MainWindowController {
     }
 
     @FXML
-    private void openExampleMenuItemHandler(ActionEvent actionEvent) {
+    private void openExampleMenuItemHandler() {
         //TODO
     }
 
     @FXML
-    private void saveMenuItemHandler(ActionEvent actionEvent) {
+    private void saveMenuItemHandler() {
         try {
             saveCurrentFile();
         } catch (IOException exception) {
@@ -89,7 +96,7 @@ public class MainWindowController {
     }
 
     @FXML
-    private void saveAsMenuItemHandler(ActionEvent actionEvent) {
+    private void saveAsMenuItemHandler() {
         FileChooser fileChooser = createFileChooser();
         fileChooser.setTitle("Save File");
         File file = fileChooser.showSaveDialog(primaryStage);
@@ -103,37 +110,62 @@ public class MainWindowController {
     }
 
     @FXML
-    private void exitMenuItemHandler(ActionEvent actionEvent) {
-        //TODO
+    private void exitMenuItemHandler() {
+        try {
+            if (dirtyFile) {
+                if (!saveAndExitDialog()) {
+                    return;
+                }
+            }
+            primaryStage.close();
+            System.exit(0);
+        } catch (IOException exception) {
+            showFileWriteAlert();
+        }
     }
 
     @FXML
-    private void undoMenuItemHandler(ActionEvent actionEvent) {
-        codeTextArea.undo();
+    private void undoMenuItemHandler() {
+        try {
+            codeTextArea.undo();
+        } catch (IndexOutOfBoundsException ignored) {
+        }
     }
 
     @FXML
-    private void redoMenuItemHandler(ActionEvent actionEvent) {
-        codeTextArea.redo();
+    private void redoMenuItemHandler() {
+        try {
+            codeTextArea.redo();
+        } catch (IndexOutOfBoundsException ignored) {
+        }
     }
 
     @FXML
-    private void cutMenuItemHandler(ActionEvent actionEvent) {
-        codeTextArea.cut();
+    private void cutMenuItemHandler() {
+        try {
+            codeTextArea.cut();
+        } catch (IndexOutOfBoundsException ignored) {
+        }
     }
 
     @FXML
-    private void copyMenuItemHandler(ActionEvent actionEvent) {
-        codeTextArea.copy();
+    private void copyMenuItemHandler() {
+        try {
+            codeTextArea.copy();
+        } catch (IndexOutOfBoundsException ignored) {
+        }
     }
 
     @FXML
-    private void pasteMenuItemHandler(ActionEvent actionEvent) {
-        codeTextArea.paste();
+    private void pasteMenuItemHandler() {
+        try {
+            codeTextArea.paste();
+        } catch (IndexOutOfBoundsException ignored) {
+        }
     }
 
     @FXML
-    private void runMenuItemHandler(ActionEvent actionEvent) {
+    private void runMenuItemHandler() {
         if (dirtyFile) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Warning");
@@ -151,8 +183,51 @@ public class MainWindowController {
     }
 
     @FXML
-    private void aboutMenuItemHandler(ActionEvent actionEvent) {
-        //TODO
+    private void aboutMenuItemHandler() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About");
+        alert.setHeaderText(ApplicationMain.INTERPRETER_TITLE);
+
+        Hyperlink link = new Hyperlink();
+        link.setText("Repository");
+        link.setOnAction(event -> {
+            try {
+                openWebpage(new URL(ApplicationMain.REPOSITORY_LINK));
+            } catch (MalformedURLException ignored) {
+            }
+        });
+        link.setBorder(Border.EMPTY);
+        link.setPadding(new Insets(0, 0, 0, 0));
+
+        VBox contentPanel = new VBox();
+        contentPanel.getChildren().add(new Label("Copyright © Cosarca Alexandru, 2018"));
+        HBox linkHBox = new HBox();
+        linkHBox.getChildren().add(new Label("Github link: "));
+        linkHBox.getChildren().add(link);
+        contentPanel.getChildren().add(linkHBox);
+        contentPanel.getChildren().add(new Label("Licensed under the MIT License."));
+
+        alert.getDialogPane().setContent(contentPanel);
+        alert.showAndWait();
+    }
+
+    private void openWebpage(URI uri) {
+        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                desktop.browse(uri);
+            } catch (Exception exception) {
+                showAlert("Could not open link repository link " + ApplicationMain.REPOSITORY_LINK);
+            }
+        }
+    }
+
+    private void openWebpage(URL url) {
+        try {
+            openWebpage(url.toURI());
+        } catch (URISyntaxException exception) {
+            showAlert("Could not open link repository link " + ApplicationMain.REPOSITORY_LINK);
+        }
     }
 
     private boolean saveAndExitDialog() throws IOException {
@@ -183,7 +258,7 @@ public class MainWindowController {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Error");
         alert.setContentText(text);
-        alert.show();
+        alert.showAndWait();
     }
 
     private void showFileReadAlert() {
@@ -198,7 +273,7 @@ public class MainWindowController {
         if (currentFile != null) {
             saveCodeToFile(currentFile);
         } else {
-            saveAsMenuItemHandler(null);
+            saveAsMenuItemHandler();
         }
     }
 
@@ -210,7 +285,7 @@ public class MainWindowController {
         if (currentFile != null) {
             title += currentFile.getName() + " - ";
         }
-        title += ApplicationMain.BRAINFUCK_TITLE;
+        title += ApplicationMain.INTERPRETER_TITLE;
         primaryStage.setTitle(title);
     }
 
@@ -242,9 +317,23 @@ public class MainWindowController {
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
+        Platform.setImplicitExit(false);
+        primaryStage.setOnCloseRequest(event -> {
+            try {
+                if (dirtyFile) {
+                    if (!saveAndExitDialog()) {
+                        event.consume();
+                        return;
+                    }
+                }
+                Platform.setImplicitExit(true);
+            } catch (IOException exception) {
+                showFileWriteAlert();
+            }
+        });
     }
 
-    public void setDirtyFile(boolean dirtyFile) {
+    private void setDirtyFile(boolean dirtyFile) {
         this.dirtyFile = dirtyFile;
         setTitle();
     }
