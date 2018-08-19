@@ -5,6 +5,8 @@ import com.google.common.io.Files;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -12,6 +14,7 @@ import main.ApplicationMain;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 public class MainWindowController {
     private File currentFile = null;
@@ -32,12 +35,10 @@ public class MainWindowController {
         codeTextArea.textProperty().addListener((observableValue, initialContent, newContent) -> {
             if (!dirtyFile) {
                 previousContent = initialContent;
-                dirtyFile = true;
-                setTitle();
+                setDirtyFile(true);
             } else {
                 if (newContent.equals(previousContent)) {
-                    dirtyFile = false;
-                    setTitle();
+                    setDirtyFile(false);
                 }
             }
         });
@@ -45,7 +46,18 @@ public class MainWindowController {
 
     @FXML
     private void newMenuItemHandler(ActionEvent actionEvent) {
-        //TODO
+        try {
+            if (!dirtyFile || saveAndExitDialog()) {
+                currentFile = null;
+                codeTextArea.setText("");
+                inputTextArea.setText("");
+                outputTextArea.setText("");
+                setDirtyFile(false);
+            }
+        }
+        catch (IOException exception) {
+            showFileWriteAlert();
+        }
     }
 
     @FXML
@@ -54,7 +66,11 @@ public class MainWindowController {
         fileChooser.setTitle("Open File");
         File file = fileChooser.showOpenDialog(primaryStage);
         if (file != null) {
-            openFile(file);
+            try {
+                openFile(file);
+            } catch (IOException exception) {
+                showFileReadAlert();
+            }
         }
     }
 
@@ -65,11 +81,10 @@ public class MainWindowController {
 
     @FXML
     private void saveMenuItemHandler(ActionEvent actionEvent) {
-        if (currentFile != null) {
-            saveCodeToFile(currentFile);
-        }
-        else {
-            saveAsMenuItemHandler(null);
+        try {
+            saveCurrentFile();
+        } catch (IOException exception) {
+            showFileWriteAlert();
         }
     }
 
@@ -79,7 +94,11 @@ public class MainWindowController {
         fileChooser.setTitle("Save File");
         File file = fileChooser.showSaveDialog(primaryStage);
         if (file != null) {
-            saveCodeToFile(file);
+            try {
+                saveCodeToFile(file);
+            } catch (IOException exception) {
+                showFileWriteAlert();
+            }
         }
     }
 
@@ -90,37 +109,97 @@ public class MainWindowController {
 
     @FXML
     private void undoMenuItemHandler(ActionEvent actionEvent) {
-        //TODO
+        codeTextArea.undo();
     }
 
     @FXML
     private void redoMenuItemHandler(ActionEvent actionEvent) {
-        //TODO
+        codeTextArea.redo();
     }
 
     @FXML
     private void cutMenuItemHandler(ActionEvent actionEvent) {
-        //TODO
+        codeTextArea.cut();
     }
 
     @FXML
     private void copyMenuItemHandler(ActionEvent actionEvent) {
-        //TODO
+        codeTextArea.copy();
     }
 
     @FXML
     private void pasteMenuItemHandler(ActionEvent actionEvent) {
-        //TODO
+        codeTextArea.paste();
     }
 
     @FXML
     private void runMenuItemHandler(ActionEvent actionEvent) {
-        //TODO
+        if (dirtyFile) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Warning");
+            alert.setContentText("Current file must be saved to continue. Save?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                try {
+                    saveCurrentFile();
+                    runCurrentFile();
+                } catch (IOException exception) {
+                    showFileWriteAlert();
+                }
+            }
+        }
     }
 
     @FXML
     private void aboutMenuItemHandler(ActionEvent actionEvent) {
         //TODO
+    }
+
+    private boolean saveAndExitDialog() throws IOException {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Save Current File");
+        alert.setHeaderText("Do you want to save the currently opened file?");
+
+        ButtonType buttonTypeSave = new ButtonType("Save");
+        ButtonType buttonTypeDontSave = new ButtonType("Don't save");
+        ButtonType buttonTypeCancel = new ButtonType("Cancel");
+
+        alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeDontSave, buttonTypeCancel);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent()) {
+            if (result.get() == buttonTypeSave) {
+                saveCurrentFile();
+                return true;
+            } else if (result.get() == buttonTypeDontSave) {
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    private void showAlert(String text) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Error");
+        alert.setContentText(text);
+        alert.show();
+    }
+
+    private void showFileReadAlert() {
+        showAlert("File can not be read!");
+    }
+
+    private void showFileWriteAlert() {
+        showAlert("File can not be written!");
+    }
+
+    private void saveCurrentFile() throws IOException {
+        if (currentFile != null) {
+            saveCodeToFile(currentFile);
+        } else {
+            saveAsMenuItemHandler(null);
+        }
     }
 
     private void setTitle() {
@@ -135,35 +214,21 @@ public class MainWindowController {
         primaryStage.setTitle(title);
     }
 
-    private void openFile(File file) {
-        try {
-            StringBuilder stringBuilder = new StringBuilder();
-            Files.readLines(file, Charsets.UTF_8).forEach(x -> stringBuilder.append(x).append("\n"));
-            codeTextArea.setText(stringBuilder.toString());
-            currentFile = file;
-            dirtyFile = false;
-            setTitle();
-        } catch (IOException exception) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Error");
-            alert.setContentText("File can not be read!");
-        }
+    private void openFile(File file) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        Files.readLines(file, Charsets.UTF_8).forEach(x -> stringBuilder.append(x).append("\n"));
+        codeTextArea.setText(stringBuilder.toString());
+        currentFile = file;
+        setDirtyFile(false);
     }
 
-    private void saveCodeToFile(File file) {
-        try {
-            if(!file.getName().contains(".")) {
-                file = new File(file.getAbsolutePath() + ".bf");
-            }
-            Files.write(codeTextArea.getText(), file, Charsets.UTF_8);
-            dirtyFile = false;
-            currentFile = file;
-            setTitle();
-        } catch (IOException exception) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Error");
-            alert.setContentText("File can not be written!");
+    private void saveCodeToFile(File file) throws IOException {
+        if (!file.getName().contains(".")) {
+            file = new File(file.getAbsolutePath() + ".bf");
         }
+        Files.write(codeTextArea.getText(), file, Charsets.UTF_8);
+        currentFile = file;
+        setDirtyFile(false);
     }
 
     private FileChooser createFileChooser() {
@@ -177,5 +242,14 @@ public class MainWindowController {
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
+    }
+
+    public void setDirtyFile(boolean dirtyFile) {
+        this.dirtyFile = dirtyFile;
+        setTitle();
+    }
+
+    private void runCurrentFile() {
+        //TODO
     }
 }
