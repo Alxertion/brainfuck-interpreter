@@ -1,63 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.geometry.Insets?>
-
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
-<GridPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.121"
-          xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
-    <MenuBar layoutY="-2.0" prefHeight="32.0" prefWidth="1024.0" GridPane.hgrow="ALWAYS"
-             GridPane.columnIndex="0" GridPane.rowIndex="0">
+
+<GridPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
+    <MenuBar layoutY="-2.0" prefHeight="32.0" prefWidth="1024.0" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0">
         <Menu mnemonicParsing="false" text="File">
-            <MenuItem onAction="#newMenuItemHandler" fx:id="newMenuItem" mnemonicParsing="false" text="New"/>
-            <MenuItem onAction="#openMenuItemHandler" fx:id="openMenuItem" mnemonicParsing="false" text="Open..."/>
-            <MenuItem onAction="#openExampleMenuItemHandler" fx:id="openExampleMenuItem" mnemonicParsing="false"
-                      text="Open Example"/>
-            <MenuItem onAction="#exitMenuItemHandler" fx:id="exitMenuItem" mnemonicParsing="false" text="Exit"/>
+            <MenuItem fx:id="newMenuItem" mnemonicParsing="false" onAction="#newMenuItemHandler" text="New" />
+            <MenuItem fx:id="openMenuItem" mnemonicParsing="false" onAction="#openMenuItemHandler" text="Open..." />
+            <MenuItem fx:id="openExampleMenuItem" mnemonicParsing="false" onAction="#openExampleMenuItemHandler" text="Open example" />
+         <SeparatorMenuItem mnemonicParsing="false" />
+         <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" onAction="#saveMenuItemHandler" text="Save" />
+         <MenuItem fx:id="saveAsMenuItem" mnemonicParsing="false" onAction="#saveAsMenuItemHandler" text="Save as..." />
+         <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" onAction="#exitMenuItemHandler" text="Exit" />
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
-            <MenuItem onAction="#undoMenuItemHandler" fx:id="undoMenuItem" mnemonicParsing="false" text="Undo"/>
-            <MenuItem onAction="#redoMenuItemHandler" fx:id="redoMenuItem" mnemonicParsing="false" text="Redo"/>
-            <SeparatorMenuItem mnemonicParsing="false"/>
-            <MenuItem onAction="#cutMenuItemHandler" fx:id="cutMenuItem" mnemonicParsing="false" text="Cut"/>
-            <MenuItem onAction="#copyMenuItemHandler" fx:id="copyMenuItem" mnemonicParsing="false" text="Copy"/>
-            <MenuItem onAction="#pasteMenuItemHandler" fx:id="pasteMenuItem" mnemonicParsing="false" text="Paste"/>
+            <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" onAction="#undoMenuItemHandler" text="Undo" />
+            <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" onAction="#redoMenuItemHandler" text="Redo" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem fx:id="cutMenuItem" mnemonicParsing="false" onAction="#cutMenuItemHandler" text="Cut" />
+            <MenuItem fx:id="copyMenuItem" mnemonicParsing="false" onAction="#copyMenuItemHandler" text="Copy" />
+            <MenuItem fx:id="pasteMenuItem" mnemonicParsing="false" onAction="#pasteMenuItemHandler" text="Paste" />
         </Menu>
         <Menu mnemonicParsing="false" text="Run">
-            <MenuItem onAction="#runMenuItemHandler" fx:id="runMenuItem" mnemonicParsing="false" text="Run"/>
+            <MenuItem fx:id="runMenuItem" mnemonicParsing="false" onAction="#runMenuItemHandler" text="Run" />
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
-            <MenuItem onAction="#aboutMenuItemHandler" fx:id="aboutMenuItem" mnemonicParsing="false" text="About"/>
+            <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" onAction="#aboutMenuItemHandler" text="About" />
         </Menu>
     </MenuBar>
-    <TextArea fx:id="codeTextArea" layoutY="30.0" prefHeight="550.0" prefWidth="1024.0" promptText="Code..."
-              GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
+    <TextArea fx:id="codeTextArea" layoutY="30.0" prefHeight="550.0" prefWidth="1024.0" promptText="Code..." GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
         <GridPane.margin>
-            <Insets bottom="15.0"/>
+            <Insets bottom="15.0" />
         </GridPane.margin>
         <font>
             <Font name="Courier New Bold" size="18.0" />
         </font>
     </TextArea>
-    <TextArea fx:id="outputTextArea" editable="false" layoutY="593.0" prefHeight="101.0" prefWidth="1024.0"
-              promptText="Output..." GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.vgrow="ALWAYS"
-              GridPane.hgrow="ALWAYS">
+    <TextArea fx:id="outputTextArea" editable="false" layoutY="593.0" prefHeight="101.0" prefWidth="1024.0" promptText="Output..." GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
         <GridPane.margin>
-            <Insets bottom="15.0"/>
+            <Insets bottom="15.0" />
         </GridPane.margin>
         <font>
             <Font name="Courier New Bold" size="18.0" />
         </font>
     </TextArea>
-    <TextArea fx:id="inputTextArea" layoutY="706.0" prefHeight="48.0" prefWidth="1024.0" promptText="Input..."
-              GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
+    <TextArea fx:id="inputTextArea" layoutY="706.0" prefHeight="48.0" prefWidth="1024.0" promptText="Input..." GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS">
         <font>
             <Font name="Courier New Bold" size="18.0" />
         </font>
     </TextArea>
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+   </rowConstraints>
 </GridPane>
